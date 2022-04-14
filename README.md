@@ -38,7 +38,7 @@ how anal you want to get. Here's a demonstration of using this to define your ow
 ```js
 let obj = {
             tag: "mytag", //the tinySVG tag (must match parseMethod), all tags are lowercase so radialGradient will become radialgradiant
-            colour: "none" //can use helper func getHexFromStyle() to fill this!,
+            colour: "none", //can use helper func getHexFromStyle() to fill this!
             properties: {
                 d: properties["d"] || "", //properties are HTML/SVG attributes
                 transform: properties["transform"] || "",
