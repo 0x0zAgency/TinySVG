@@ -1,7 +1,5 @@
 # TinySVG-JS
-A SVG Transpiler designed for Web3 by Llydia Cross
-
-## Signed The 0x0zAgency Development Team
+## A SVG Transpiler designed for Web3 by Llydia Cross (0x0zAgency)
 
 TinySVG is a SVG transpiler which aims to cut the size of most SVGs in half and also provide more safety over SVG. You can also use it
 to make new SVG art using the various create methods.

@@ -1,7 +1,8 @@
 {
     "name": "tinysvg-js",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A Web3 inspired SVG transpiler.",
+    "main": "tinysvg.js",
     "directories": {
         "test": "tests"
     },
