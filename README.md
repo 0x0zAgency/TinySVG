@@ -14,7 +14,7 @@ simply pass true as the second argument on the method toTinySVG, like so.
 You can also add on functionality via the registerTag method and register your own conversion and parse methods.
 
 Heres a quick rundown on parse and conversion methods. Conversion methods are used when taking SVG to tinySVG, and parseMethods are for returning tinySVG
-back to SVG. It does this by defining matching the SVG tag name to the conversion method. We define new conversion methods by using the lowercase SVG/HTML tag name,
+back to SVG. It does this by matching the SVG tag to the conversion method via its tag name. We define new conversion methods by using the lowercase SVG/HTML tag name,
 for example:
 
 ```js
