@@ -7,6 +7,7 @@ module.exports = {
     filename: "tinysvg.js",
     library: "$",
     libraryTarget: "umd",
+    globalObject: 'this'
   },
   module: {
     rules: [

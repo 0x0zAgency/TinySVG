@@ -1,14 +1,55 @@
-# TinySVG-JS
-## A SVG Transpiler designed for Web3 by Llydia Cross (0x0zAgency)
+# TinySVG
 
-TinySVG is a SVG transpiler which aims to cut the size of most SVGs in half and also provide more safety over SVG. You can also use it
-to make new SVG art using the various create methods.
+```
+npm install tinysvg-js
+yarn add tinysvg-js
+```
 
-Its very simple to use, simply put your SVG code into `tinySVG.toTinySVG("<svg>..")` and log the output and take a look, if you just want just a string to be returned then
-simply pass true as the second argument on the method toTinySVG, like so.
-`tinySVG.toTinySVG("<svg>..", true)` else an object will be returned by default. The resulting tinySVG can be accessed in this case via the `path` key as well as LZ2 compressed paths under the `compressed` key.
+# Usage
 
-You can also add on functionality via the registerTag method and register your own conversion and parse methods.
+### toTinySVG(string|object:svgCode, bool: returnObject, bool: writeColours)
+```js
+import {tinySVG} from 'tinysvg-js';
+
+let [ data, pathSize, colours, compressed] = tinySVG.toTinySVG(`
+<svg id="eihepFv6fnS1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 524.9 274.688" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+    <path d="M1.438897,10.358418L0.5,35.23919c112.25619,93.33457,376.72295,214.61628,477.89856,238.94928l4.69448-19.71684L1.438897,10.358418Z" transform="matrix(-1 0 0 1 525.4-4.56316)" fill="#800000" stroke="#000"/>
+    <path d="M1.438897,9.88897C141.71843,124.29882,393.13787,225.22368,483.5625,254.00218l40.37256-67.13113C361.26882,110.35993,180.66139,43.74209,13.644558,0.5C7.69821,2.377794,3.629657,5.507451,1.438897,9.88897Z" transform="matrix(-1 0 0 1 525.373948 0)" fill="#f00" stroke="#000"/>
+</svg>
+`);
+
+console.log(data); //microsvg code
+console.log(pathSize); //used with InfinityMint & colours
+console.log(colours); //list of colours
+console.log(compressed); //compressed LZString (Upload this to the blockchain!)
+```
+
+#### Note!
+The path size is used for randomised colour generation inside of the InfinityMint smart contract and thus is only really neccessary for that particular function. It should the same as the length of the list of colours returned from the toTinySVG method. **You might need to store your tinySVG along with your colours if you are not writing the colours to the outputted tinySVG**
+
+### toSVG(string|object: tinySVG, bool: headerHasProperties, any[]: colours, bool: skipSVGTag, bool: noneToBlack )
+
+```js
+import {tinySVG} from "tinysvg-js"
+
+
+let [result, pathSize, colours] =
+//you can also put compressed (<...>) tinySVG into here as well!
+tinySVG.toSVG(`/h[viewbox$*|start]&p[d$*|transform$*|style$fill:#ff]&g[transform$*|id$two|start]&p[d$*|transform$*|style$*]&p[d$*|transform$*|style$*]&g[end]&h[end]`)
+
+console.log(result); //svg code
+console.log(pathSize); //path size (explained previous paragraph)
+console.log(colours); //drawn colours (explained previous paragraph)
+```
+
+
+# Advanced Usage
+
+## Creating SVG's Programatically
+
+[TUTORIAL COMING SOON]
+
+## Defining Custom Tags
 
 Heres a quick rundown on parse and conversion methods. Conversion methods are used when taking SVG to tinySVG, and parseMethods are for returning tinySVG
 back to SVG. It does this by matching the SVG tag to the conversion method via its tag name. We define new conversion methods by using the lowercase SVG/HTML tag name,
@@ -88,3 +129,26 @@ console.log(tag)
 //put it back into SVG
 console.log(tinySVG.toSVG(tag));
 ```
+
+## Tests
+
+Testing can be done using mocha.
+
+```npm run test```
+
+```mocha```
+
+## Building
+
+Building is required to use this module.
+
+```npm run build```
+
+It might be frequired to generate types yourself via the following.
+
+```tsc```
+# Credits
+
+Written by Llydia Cross 2021
+
+0x0zAgency - Speedrunning the Metaverse
