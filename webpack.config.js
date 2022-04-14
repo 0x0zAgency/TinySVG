@@ -4,7 +4,7 @@ module.exports = {
   entry: path.resolve(__dirname, "src/tinysvg.js"),
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "tinysvg_bundle.js",
+    filename: "tinysvg.js",
     library: "$",
     libraryTarget: "umd",
   },
