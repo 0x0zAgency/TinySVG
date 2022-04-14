@@ -2,7 +2,7 @@
     "name": "tinysvg-js",
     "version": "1.0.8",
     "description": "A Web3 inspired SVG transpiler.",
-    "main": "dist/tinysvg",
+    "main": "dist/tinysvg.js",
     "scripts": {
         "build": "webpack"
     },
