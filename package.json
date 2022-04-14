@@ -1,0 +1,28 @@
+{
+    "name": "tinysvg-js",
+    "version": "1.0.2",
+    "description": "A Web3 inspired SVG transpiler.",
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/0x0zAgency/TinySVG-JS.git"
+    },
+    "keywords": [
+        "svg"
+    ],
+    "author": "Llydia Cross",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/0x0zAgency/TinySVG-JS/issues"
+    },
+    "homepage": "https://github.com/0x0zAgency/TinySVG-JS#readme",
+    "dependencies": {
+        "lz-string": "^1.4.4",
+        "svg-parser": "^2.0.4"
+    }
+}
