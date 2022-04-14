@@ -7,9 +7,9 @@ A SVG Transpiler designed for Web3.
 TinySVG is a SVG transpiler which aims to cut the size of most SVGs in half and also provide more safety over SVG. You can also use it
 to make new SVG art using the various create methods.
 
-Its very simple to use, simply put your SVG code into `tinySVG.toTinySVG("<svg>..")` and log the output and take a look, if you just want tinySVG to be returned then
+Its very simple to use, simply put your SVG code into `tinySVG.toTinySVG("<svg>..")` and log the output and take a look, if you just want just a string to be returned then
 simply pass true as the second argument on the method toTinySVG, like so.
-`tinySVG.toTinySVG("<svg>..", true)`
+`tinySVG.toTinySVG("<svg>..", true)` else an object will be returned by default. The resulting tinySVG can be accessed in this case via the `path` key as well as LZ2 compressed paths under the `compressed` key.
 
 You can also add on functionality via the registerTag method and register your own conversion and parse methods.
 
