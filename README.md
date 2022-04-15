@@ -5,6 +5,8 @@ npm install tinysvg-js
 yarn add tinysvg-js
 ```
 
+TinySVG is a SVG transpiler which aims at minimizing SVG code for usage in NFT contracts. It was designed for use inside of the InfinityMint NFT Minter. It also adds a layer of security by breaking down user entered SVG into TinySVG with the ability to programatically define which tags you do and don't support. LZ encoding and decoding is also included to make the SVG even smaller.
+
 # Usage
 
 ### toTinySVG(string|object:svgCode, bool: returnObject, bool: writeColours)
@@ -24,9 +26,8 @@ console.log(colours); //list of colours
 console.log(compressed); //compressed LZString (Upload this to the blockchain!)
 ```
 
-#### Note!
-The path size is used for randomised colour generation inside of the InfinityMint smart contract and thus is only really neccessary for that particular function. It should the same as the length of the list of colours returned from the toTinySVG method. **You might need to store your tinySVG along with your colours if you are not writing the colours to the outputted tinySVG**
-
+#### Note
+Colours of the SVG are seperated from the SVG and returned in a seperate array as numerical values. All fill tags will be removed as well as any style tags which only include fill statements. **You might need to store the colours along with the tinySVG code depending on your use case**
 ### toSVG(string|object: tinySVG, bool: headerHasProperties, any[]: colours, bool: skipSVGTag, bool: noneToBlack )
 
 ```js
@@ -45,11 +46,7 @@ console.log(colours); //drawn colours (explained previous paragraph)
 
 # Advanced Usage
 
-## Creating SVG's Programatically
-
-[TUTORIAL COMING SOON]
-
-## Defining Custom Tags
+## Implementing Tags
 
 Heres a quick rundown on parse and conversion methods. Conversion methods are used when taking SVG to tinySVG, and parseMethods are for returning tinySVG
 back to SVG. It does this by matching the SVG tag to the conversion method via its tag name. We define new conversion methods by using the lowercase SVG/HTML tag name,
@@ -130,23 +127,20 @@ console.log(tag)
 console.log(tinySVG.toSVG(tag));
 ```
 
-## Tests
+# Tests
 
 Testing can be done using mocha.
 
 ```npm run test```
-
+or
 ```mocha```
 
-## Building
+# Building
 
-Building is required to use this module.
+Building is required to use this module, you can do so through the following command which should automatically run typescript as well to generating the typings.
 
 ```npm run build```
 
-It might be frequired to generate types yourself via the following.
-
-```tsc```
 # Credits
 
 Written by Llydia Cross 2021

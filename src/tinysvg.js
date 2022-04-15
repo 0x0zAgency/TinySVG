@@ -529,6 +529,7 @@ const tinySVG = new (class {
 	 * @param {Array} svgColours
 	 * @param {bool} skipSVGTag
 	 * @param {bool} noneToBlack
+	 * @param {bool} forceColours
 	 * @returns
 	 */
 	toSVG(
@@ -536,7 +537,8 @@ const tinySVG = new (class {
 		headerHasProperties = true,
 		svgColours = [],
 		skipSVGTag = false,
-		noneToBlack = false
+		noneToBlack = false,
+		forceColours = true
 	) {
 		let map;
 		let pathCount = 0;
@@ -567,12 +569,10 @@ const tinySVG = new (class {
 				//use it, else pop from the colours stack if possible
 				if (
 					this.isColourTag(tag) &&
-					(task.properties["fill"] === undefined ||
-						task.properties["fill"] === null ||
-						(typeof task.properties["fill"] === "string" &&
-							task.properties["fill"].indexOf("#") === -1 &&
-							svgColours.length > 0 &&
-							svgColours[svgColours.length - 1] !== "none"))
+					(forceColours || task.properties["fill"] === undefined ||
+						task.properties["fill"] === null ) &&
+						( svgColours.length > 0 &&
+						 svgColours[svgColours.length - 1] !== "none")
 				)
 					task.properties["fill"] = this.toHexFromDecimal(
 						svgColours.pop()
