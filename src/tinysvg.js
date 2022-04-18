@@ -449,7 +449,7 @@ const tinySVG = new (class {
 		result.paths = this.buildMap(result.map);
 		result.compressed = this.compress(result.paths);
 
-		if (returnObject) return result;
+		if (returnObject) return { ...result };
 		return [
 			result.paths,
 			result.pathSize,
@@ -542,7 +542,7 @@ const tinySVG = new (class {
 	) {
 		let map;
 		let pathCount = 0;
-		svgColours = svgColours.reverse();
+		svgColours = [...svgColours].reverse();
 
 		if (typeof tinySVG === "object")
 			map = tinySVG.paths || tinySVG.map || tinySVG;
