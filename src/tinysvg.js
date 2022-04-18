@@ -535,14 +535,14 @@ const tinySVG = new (class {
 	toSVG(
 		tinySVG,
 		headerHasProperties = true,
-		svgColours = [],
+		colours  = [],
 		skipSVGTag = false,
 		noneToBlack = false,
 		forceColours = true
 	) {
 		let map;
 		let pathCount = 0;
-		svgColours = [...svgColours].reverse();
+		let svgColours = [...colours].reverse();
 
 		if (typeof tinySVG === "object")
 			map = tinySVG.paths || tinySVG.map || tinySVG;
