@@ -357,7 +357,7 @@ const tinySVG = new (class {
 	 * @param {bool} writeColours
 	 * @returns
 	 */
-	toTinySVG(svgCode, returnObject = false, writeColours = false) {
+	toTinySVG(svgCode, returnObject = false, writeColours = false, convertColoursToNumber = true) {
 		let hastObject;
 		try {
 			hastObject = parse(svgCode);
@@ -366,7 +366,10 @@ const tinySVG = new (class {
 			throw new Error("Invalid SVG");
 		}
 
-		this.settings = {};
+		this.settings = {
+			convertToNumber:  convertColoursToNumber
+		};
+
 		this.stack = [];
 		this.conversionData = [];
 
@@ -574,9 +577,15 @@ const tinySVG = new (class {
 						( svgColours.length > 0 &&
 						 svgColours[svgColours.length - 1] !== "none")
 				)
-					task.properties["fill"] = this.toHexFromDecimal(
-						svgColours.pop()
-					);
+				{
+
+					let result = svgColours.pop();
+
+					if (typeof result === "number" || !isNaN(result))
+						result = this.toHexFromDecimal(result);
+
+						task.properties["fill"] = result;
+				}
 
 				if (this.isPathTag(tag)) pathCount++;
 
@@ -825,8 +834,7 @@ const tinySVG = new (class {
 	getHexFromStyle(properties) {
 		if (properties.fill !== undefined)
 			return (
-				parseInt(this.tryDecodeURI(properties.fill.substring(1)), 16) ||
-				"none"
+				this.settings.convertToNumber ? parseInt(this.tryDecodeURI(properties.fill.substring(1)), 16) : properties.fill
 			);
 		let style = properties?.style;
 		if (style === undefined) return "none";
@@ -836,7 +844,7 @@ const tinySVG = new (class {
 
 		let parts = style.split("#"); //if we find no hex code at the start of the string, then try and go to the end tag
 		if (parts[1] === undefined) style = lines[lines.length - 1];
-		else return parseInt(this.tryDecodeURI(parts[1]), 16) || "none";
+		else return this.settings.convertToNumber ? (parseInt(this.tryDecodeURI(parts[1]), 16) || "none") : this.tryDecodeURI(parts[1]);
 
 		//try second to end tag or first again
 		if (style === "") style = lines[Math.max(0, lines.length - 2)];
@@ -844,7 +852,7 @@ const tinySVG = new (class {
 		parts = style.split("#"); //
 		if (parts[1] === undefined) return "none";
 
-		return parseInt(this.tryDecodeURI(parts[1]), 16) || "none";
+		return this.settings.convertToNumber ? (parseInt(this.tryDecodeURI(parts[1]), 16) || "none") : this.tryDecodeURI(parts[1]);
 	}
 
 	/**
