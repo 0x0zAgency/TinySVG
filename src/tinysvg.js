@@ -282,10 +282,10 @@ const tinySVG = new (class {
 		let key;
 		let callable;
 
-		if (conversionMethod instanceof Array){
+		if (conversionMethod instanceof Array) {
 			key = conversionMethod[0];
 			if (typeof conversionMethod[0] !== "function")
-				throw new Error("Value must be callable")
+				throw new Error("Value must be callable");
 
 			callable = conversionMethod[1];
 		} else if (typeof conversionMethod === "object") {
@@ -293,13 +293,18 @@ const tinySVG = new (class {
 			let vals = Object.values(conversionMethod);
 
 			if (typeof vals[0] !== "function")
-				throw new Error("Value must be callable")
+				throw new Error("Value must be callable");
 
-			callable = vals[0]
-		}  else
-			throw new Error("bad type for parseMethod should be object or instance of Array")
+			callable = vals[0];
+		} else
+			throw new Error(
+				"bad type for parseMethod should be object or instance of Array"
+			);
 
-		if (typeof key !== "string" && typeof key !== "number" || this.conversionMethods[key] !== undefined)
+		if (
+			(typeof key !== "string" && typeof key !== "number") ||
+			this.conversionMethods[key] !== undefined
+		)
 			throw new Error("bad key: " + key);
 
 		this.conversionMethods[key] = callable;
@@ -309,7 +314,7 @@ const tinySVG = new (class {
 		if (parseMethod instanceof Array) {
 			key = parseMethod[0];
 			if (typeof parseMethod[0] !== "function")
-				throw new Error("Value must be callable")
+				throw new Error("Value must be callable");
 
 			callable = parseMethod[1];
 		} else if (typeof conversionMethod === "object") {
@@ -317,12 +322,17 @@ const tinySVG = new (class {
 			let vals = Object.values(parseMethod);
 
 			if (typeof vals[0] !== "function")
-				throw new Error("Value must be callable")
-			callable = vals[0]
+				throw new Error("Value must be callable");
+			callable = vals[0];
 		} else
-			throw new Error("bad type for parseMethod should be object or instance of Array")
+			throw new Error(
+				"bad type for parseMethod should be object or instance of Array"
+			);
 
-		if (typeof key !== "string" && typeof key !== "number" || this.parseMethods[key] !== undefined)
+		if (
+			(typeof key !== "string" && typeof key !== "number") ||
+			this.parseMethods[key] !== undefined
+		)
 			throw new Error("bad key: " + key);
 	}
 
@@ -336,16 +346,15 @@ const tinySVG = new (class {
 	createElement(tinySVGTagName, properties = {}, returnObject = true) {
 		tinySVGTagName = tinySVGTagName.toLowerCase();
 		if (this.parseMethods[tinySVGTagName] === undefined)
-			throw new Error("tinySVG tag is not defined: " + tinySVGTagName)
+			throw new Error("tinySVG tag is not defined: " + tinySVGTagName);
 
 		let obj = {
 			tag: tinySVGTagName,
 			colour: this.getHexFromStyle(properties),
-			properties: {...properties}
-		}
+			properties: { ...properties },
+		};
 
-		if (returnObject)
-			return obj
+		if (returnObject) return obj;
 
 		return [obj];
 	}
@@ -357,7 +366,12 @@ const tinySVG = new (class {
 	 * @param {bool} writeColours
 	 * @returns
 	 */
-	toTinySVG(svgCode, returnObject = false, writeColours = false, convertColoursToNumber = true) {
+	toTinySVG(
+		svgCode,
+		returnObject = false,
+		writeColours = false,
+		convertColoursToNumber = true
+	) {
 		let hastObject;
 		try {
 			hastObject = parse(svgCode);
@@ -367,7 +381,7 @@ const tinySVG = new (class {
 		}
 
 		this.settings = {
-			convertToNumber:  convertColoursToNumber
+			convertToNumber: convertColoursToNumber,
 		};
 
 		this.stack = [];
@@ -470,11 +484,10 @@ const tinySVG = new (class {
 	 */
 
 	insertElement(element, map, belowFirstElement) {
-
 		if (typeof element !== "object" || element instanceof Array)
 			throw new Error("invalid parameter");
 
-		this.insertMap(element, map, belowFirstElement)
+		this.insertMap(element, map, belowFirstElement);
 	}
 
 	/**
@@ -488,25 +501,19 @@ const tinySVG = new (class {
 	 */
 
 	insertMap(values, map, belowFirstElement = true) {
-		if (map instanceof Array === false)
-			map = Object.values(map);
+		if (map instanceof Array === false) map = Object.values(map);
 
-		if (values instanceof Array === false)
-			values = [{ ...values }];
+		if (values instanceof Array === false) values = [{ ...values }];
 
 		let result = [];
 		if (belowFirstElement) {
-			result = [
-				map[0],
-				...values,
-				...map.splice(1)
-			]
+			result = [map[0], ...values, ...map.splice(1)];
 		} else {
 			result = [
 				...map.splice(0, map.length - 1),
 				...values,
-				...map.splice(map.length - 1, -1)
-			]
+				...map.splice(map.length - 1, -1),
+			];
 		}
 
 		return result;
@@ -538,7 +545,7 @@ const tinySVG = new (class {
 	toSVG(
 		tinySVG,
 		headerHasProperties = true,
-		colours  = [],
+		colours = [],
 		skipSVGTag = false,
 		noneToBlack = false,
 		forceColours = true
@@ -572,19 +579,18 @@ const tinySVG = new (class {
 				//use it, else pop from the colours stack if possible
 				if (
 					this.isColourTag(tag) &&
-					(forceColours || task.properties["fill"] === undefined ||
-						task.properties["fill"] === null ) &&
-						( svgColours.length > 0 &&
-						 svgColours[svgColours.length - 1] !== "none")
-				)
-				{
-
+					(forceColours ||
+						task.properties["fill"] === undefined ||
+						task.properties["fill"] === null) &&
+					svgColours.length > 0 &&
+					svgColours[svgColours.length - 1] !== "none"
+				) {
 					let result = svgColours.pop();
 
 					if (typeof result === "number" || !isNaN(result))
 						result = this.toHexFromDecimal(result);
 
-						task.properties["fill"] = result;
+					task.properties["fill"] = result;
 				}
 
 				if (this.isPathTag(tag)) pathCount++;
@@ -614,13 +620,14 @@ const tinySVG = new (class {
 			if (task.endTag) result += `</${tag}>`;
 			else {
 				if (contents !== undefined && contents !== null) {
-					result += `<${tag}${string}>${contents}` + (task.startTag === true ? "" : `</${tag}>`);
+					result +=
+						`<${tag}${string}>${contents}` +
+						(task.startTag === true ? "" : `</${tag}>`);
 				} else
 					result += `<${tag}${string}${
 						task.startTag === true ? "" : "/"
 					}>`;
 			}
-
 		}
 
 		return [result, pathCount, svgColours];
@@ -757,30 +764,7 @@ const tinySVG = new (class {
 	 */
 
 	toHexFromDecimal(decimal) {
-		return this.toHex(this.toRGB(decimal));
-	}
-
-	/**
-	 *
-	 * @param {Array} arr
-	 * @returns
-	 */
-	toHex(arr = [], padEnd = true) {
-		let rgb = (arr[0] << 16) | (arr[1] << 8) | arr[2];
-		return "#" + (padEnd ? rgb.toString(16).padEnd(6, 0) : rgb.toString(16).padStart(6, 0).padEnd(6, 0));
-	}
-
-	/**
-	 *
-	 * @param {*} c
-	 * @returns
-	 */
-	toRGB(c) {
-		let r = Math.floor(c / (256 * 256));
-		let g = Math.floor(c / 256) % 256;
-		let b = c % 256;
-
-		return [r, g, b];
+		return "#" + parseInt(decimal).toString(16);
 	}
 
 	/**
@@ -833,9 +817,14 @@ const tinySVG = new (class {
 
 	getHexFromStyle(properties) {
 		if (properties.fill !== undefined)
-			return (
-				this.settings.convertToNumber ? parseInt(this.tryDecodeURI(properties.fill.substring(1)), 16) : properties.fill
-			);
+			return this.settings.convertToNumber
+				? parseInt(
+						this.tryDecodeURI(properties.fill.substring(1))
+							.padStart(2, 0)
+							.padEnd(2, 0),
+						16
+				  )
+				: properties.fill;
 		let style = properties?.style;
 		if (style === undefined) return "none";
 		let lines = style.split(";");
@@ -844,7 +833,13 @@ const tinySVG = new (class {
 
 		let parts = style.split("#"); //if we find no hex code at the start of the string, then try and go to the end tag
 		if (parts[1] === undefined) style = lines[lines.length - 1];
-		else return this.settings.convertToNumber ? (parseInt(this.tryDecodeURI(parts[1]), 16) || "none") : this.tryDecodeURI(parts[1]);
+		else
+			return this.settings.convertToNumber
+				? parseInt(
+						this.tryDecodeURI(parts[1]).padStart(2, 0).padEnd(2, 0),
+						16
+				  ) || "none"
+				: this.tryDecodeURI(parts[1]);
 
 		//try second to end tag or first again
 		if (style === "") style = lines[Math.max(0, lines.length - 2)];
@@ -852,7 +847,12 @@ const tinySVG = new (class {
 		parts = style.split("#"); //
 		if (parts[1] === undefined) return "none";
 
-		return this.settings.convertToNumber ? (parseInt(this.tryDecodeURI(parts[1]), 16) || "none") : this.tryDecodeURI(parts[1]);
+		return this.settings.convertToNumber
+			? parseInt(
+					this.tryDecodeURI(parts[1]).padStart(2, 0).padEnd(2, 0),
+					16
+			  ) || "none"
+			: this.tryDecodeURI(parts[1]);
 	}
 
 	/**

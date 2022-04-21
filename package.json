@@ -1,6 +1,6 @@
 {
     "name": "tinysvg-js",
-    "version": "1.2.0",
+    "version": "1.2.5",
     "description": "A Web3 inspired SVG transpiler designed to store SVG inside a smart contract",
     "main": "dist/tinysvg.js",
     "scripts": {
