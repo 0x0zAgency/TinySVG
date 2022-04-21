@@ -764,7 +764,7 @@ const tinySVG = new (class {
 	 */
 
 	toHexFromDecimal(decimal) {
-		return "#" + parseInt(decimal).toString(16);
+		return "#" + parseInt(decimal).toString(16).padStart(6, 0).padEnd(6, 0);
 	}
 
 	/**
@@ -819,9 +819,7 @@ const tinySVG = new (class {
 		if (properties.fill !== undefined)
 			return this.settings.convertToNumber
 				? parseInt(
-						this.tryDecodeURI(properties.fill.substring(1))
-							.padStart(2, 0)
-							.padEnd(2, 0),
+						this.tryDecodeURI(properties.fill.substring(1)),
 						16
 				  )
 				: properties.fill;
@@ -836,7 +834,7 @@ const tinySVG = new (class {
 		else
 			return this.settings.convertToNumber
 				? parseInt(
-						this.tryDecodeURI(parts[1]).padStart(2, 0).padEnd(2, 0),
+						this.tryDecodeURI(parts[1]),
 						16
 				  ) || "none"
 				: this.tryDecodeURI(parts[1]);
@@ -849,7 +847,7 @@ const tinySVG = new (class {
 
 		return this.settings.convertToNumber
 			? parseInt(
-					this.tryDecodeURI(parts[1]).padStart(2, 0).padEnd(2, 0),
+					this.tryDecodeURI(parts[1]),
 					16
 			  ) || "none"
 			: this.tryDecodeURI(parts[1]);

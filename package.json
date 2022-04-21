@@ -1,6 +1,6 @@
 {
     "name": "tinysvg-js",
-    "version": "1.2.5",
+    "version": "1.2.8",
     "description": "A Web3 inspired SVG transpiler designed to store SVG inside a smart contract",
     "main": "dist/tinysvg.js",
     "scripts": {
@@ -22,7 +22,8 @@
     "homepage": "https://github.com/0x0zAgency/TinySVG-JS#readme",
     "dependencies": {
         "lz-string": "^1.4.4",
-        "svg-parser": "^2.0.4"
+        "svg-parser": "^2.0.4",
+        "tinysvg-js": "^1.2.7"
     },
     "devDependencies": {
         "@babel/core": "^7.17.9",
