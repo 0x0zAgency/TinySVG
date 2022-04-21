@@ -764,7 +764,12 @@ const tinySVG = new (class {
 	 */
 
 	toHexFromDecimal(decimal) {
-		return "#" + parseInt(decimal).toString(16).padStart(6, 0).padEnd(6, 0);
+		decimal = parseInt(decimal).toString(16);
+
+		if (decimal.length % 3 !== 0 && decimal.length < 6)
+			decimal = "0" + decimal;
+
+		return "#" + decimal.substring(0, 6);
 	}
 
 	/**
@@ -818,10 +823,7 @@ const tinySVG = new (class {
 	getHexFromStyle(properties) {
 		if (properties.fill !== undefined)
 			return this.settings.convertToNumber
-				? parseInt(
-						this.tryDecodeURI(properties.fill.substring(1)),
-						16
-				  )
+				? parseInt(this.tryDecodeURI(properties.fill.substring(1)), 16)
 				: properties.fill;
 		let style = properties?.style;
 		if (style === undefined) return "none";
@@ -833,10 +835,7 @@ const tinySVG = new (class {
 		if (parts[1] === undefined) style = lines[lines.length - 1];
 		else
 			return this.settings.convertToNumber
-				? parseInt(
-						this.tryDecodeURI(parts[1]),
-						16
-				  ) || "none"
+				? parseInt(this.tryDecodeURI(parts[1]), 16) || "none"
 				: this.tryDecodeURI(parts[1]);
 
 		//try second to end tag or first again
@@ -846,10 +845,7 @@ const tinySVG = new (class {
 		if (parts[1] === undefined) return "none";
 
 		return this.settings.convertToNumber
-			? parseInt(
-					this.tryDecodeURI(parts[1]),
-					16
-			  ) || "none"
+			? parseInt(this.tryDecodeURI(parts[1]), 16) || "none"
 			: this.tryDecodeURI(parts[1]);
 	}
 
