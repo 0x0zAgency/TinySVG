@@ -559,9 +559,10 @@ const tinySVG = new (class {
 
 		if (tinySVG instanceof Array === true) map = tinySVG;
 		else if (typeof tinySVG === "object")
-			map = tinySVG.paths || tinySVG.map || tinySVG;
+			map = tinySVG.paths || tinySVG.map || { 0: { ...tinySVG } };
+
 		//convert from string to map
-		else if (typeof tinySVG === "string") {
+		if (typeof tinySVG === "string") {
 			map = this.readTinySVG(tinySVG);
 		}
 
