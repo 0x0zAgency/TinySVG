@@ -769,10 +769,16 @@ const tinySVG = new (class {
 	toHexFromDecimal(decimal) {
 		decimal = parseInt(decimal).toString(16);
 
-		if (decimal.length % 3 !== 0 && decimal.length < 6)
+		if (
+			decimal.length % 3 !== 0 &&
+			decimal.length < 6 &&
+			decimal.length !== 4
+		)
 			decimal = "0" + decimal;
 
-		return "#" + decimal.substring(0, 6);
+		decimal = decimal.substring(0, 6);
+
+		return "#" + decimal;
 	}
 
 	/**
