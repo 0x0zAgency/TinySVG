@@ -19,6 +19,48 @@ const tinySVG = new (class {
 	 */
 
 	conversionMethods = {
+		text: (properties) => {
+			let obj = {
+				tag: "t",
+				properties: {
+					style: properties["style"] || "*",
+				},
+			};
+
+			return this.insertIfPresent(obj, properties, ["id"]);
+		},
+		polygon: (properties) => {
+			let colour = this.getHexFromStyle(properties);
+			let obj = {
+				tag: "poly",
+				colour: colour,
+				properties: {
+					points: properties["points"] || "*",
+				},
+			};
+
+			obj = this.cleanFillAndStyle(colour, obj, properties);
+
+			return this.insertIfPresent(obj, properties, ["id", "pathLength"]);
+		},
+		textpath: (properties) => {
+			let obj = {
+				tag: "tp",
+				properties: {
+					style: properties["style"] || "*",
+					href: properties["href"] || "*",
+				},
+			};
+
+			return this.insertIfPresent(obj, properties, [
+				"id",
+				"startOffset",
+				"spacing",
+				"textLength",
+				"side",
+				"method",
+			]);
+		},
 		//svg tag
 		svg: (properties) => {
 			let obj = {
@@ -49,26 +91,15 @@ const tinySVG = new (class {
 				"id",
 			]);
 
-			if (obj.properties.style !== undefined)
-				//can fix invisible lines
-				obj.properties.style = obj.properties.style.replace(
-					"fill:none;",
-					""
-				);
-
-			if (
-				properties.fill !== undefined &&
-				obj.properties.fill !== "*" &&
-				parseInt(properties.fill.substr(1)) === colour
-			)
-				delete obj.properties.fill;
+			obj = this.cleanFillAndStyle(colour, obj, properties);
 
 			return obj;
 		},
 		circle: (properties) => {
+			let colour = this.getHexFromStyle(properties);
 			let obj = {
 				tag: "c",
-				colour: this.getHexFromStyle(properties),
+				colour: colour,
 				properties: {
 					cx: properties["cx"] || "*",
 					cy: properties["cy"] || "*",
@@ -76,12 +107,15 @@ const tinySVG = new (class {
 				},
 			};
 
+			obj = this.cleanFillAndStyle(colour, obj, properties);
+
 			return this.insertIfPresent(obj, properties, ["style", "id"]);
 		},
 		ellipse: (properties) => {
+			let colour = this.getHexFromStyle(properties);
 			let obj = {
 				tag: "e",
-				colour: this.getHexFromStyle(properties),
+				colour: colour,
 				properties: {
 					cx: properties["cx"] || "*",
 					cy: properties["cy"] || "*",
@@ -90,12 +124,15 @@ const tinySVG = new (class {
 				},
 			};
 
+			obj = this.cleanFillAndStyle(colour, obj, properties);
+
 			return this.insertIfPresent(obj, properties, ["style", "id"]);
 		},
 		rect: (properties) => {
+			let colour = this.getHexFromStyle(properties);
 			let obj = {
 				tag: "r",
-				colour: this.getHexFromStyle(properties),
+				colour: colour,
 				properties: {
 					w: properties["w"] || "*",
 					h: properties["h"] || "*",
@@ -103,6 +140,8 @@ const tinySVG = new (class {
 					y: properties["y"] || "*",
 				},
 			};
+
+			obj = this.cleanFillAndStyle(colour, obj, properties);
 
 			return this.insertIfPresent(obj, properties, ["style", "id"]);
 		},
@@ -210,6 +249,15 @@ const tinySVG = new (class {
 		rect: (properties) => {
 			return ["rect", this.collapseProperties(properties)];
 		},
+		poly: (properties) => {
+			return ["polygon", this.collapseProperties(properties)];
+		},
+		t: (properties) => {
+			return ["text", this.collapseProperties(properties)];
+		},
+		tp: (properties) => {
+			return ["textPath", this.collapseProperties(properties)];
+		},
 		defs: (properties) => {
 			return ["defs", this.collapseProperties(properties)];
 		},
@@ -250,6 +298,27 @@ const tinySVG = new (class {
 		}
 
 		return parameters;
+	}
+
+	cleanFillAndStyle(colour, obj, properties) {
+		//if the fill is set and undefined and for some reason the style has a fill none in it, remove it
+		if (properties.fill !== undefined && obj.properties.style !== undefined)
+			//can fix invisible lines
+			obj.properties.style = obj.properties.style
+				.trim()
+				.replace("fill:none;", "");
+
+		//potential end of string css tag
+		obj.properties.style = obj.properties.style.replace("fill:none", "");
+
+		if (
+			properties.fill !== undefined &&
+			obj.properties.fill !== "*" &&
+			parseInt(properties.fill.substr(1)) === colour
+		)
+			delete obj.properties.fill;
+
+		return obj;
 	}
 
 	/**
@@ -346,7 +415,12 @@ const tinySVG = new (class {
 	 * @param {bool} returnObject
 	 * @returns
 	 */
-	createElement(tinySVGTagName, properties = {}, returnObject = true) {
+	createElement(
+		tinySVGTagName,
+		properties = {},
+		content = "",
+		returnObject = true
+	) {
 		tinySVGTagName = tinySVGTagName.toLowerCase();
 		if (this.parseMethods[tinySVGTagName] === undefined)
 			throw new Error("tinySVG tag is not defined: " + tinySVGTagName);
@@ -356,6 +430,8 @@ const tinySVG = new (class {
 			colour: this.getHexFromStyle(properties),
 			properties: { ...properties },
 		};
+
+		if (content !== "") obj.content = content;
 
 		if (returnObject) return obj;
 
@@ -403,8 +479,7 @@ const tinySVG = new (class {
 									.toLowerCase()
 									.split("~")
 									.join(":")
-									.split("|")
-									.join("")
+									.replace(/|/g, "")
 							: propertyIndex
 					] =
 						typeof propertyValue === "string"
@@ -559,15 +634,14 @@ const tinySVG = new (class {
 
 		if (tinySVG instanceof Array === true) map = tinySVG;
 		else if (typeof tinySVG === "object")
-			map = tinySVG.paths || tinySVG.map || { 0: { ...tinySVG } };
-
+			map = tinySVG.paths || tinySVG.map || tinySVG;
 		//convert from string to map
-		if (typeof tinySVG === "string") {
+		else if (typeof tinySVG === "string") {
 			map = this.readTinySVG(tinySVG);
 		}
 
 		let result = "";
-		let reversedMap = (map instanceof Array === true ? map.reverse() : Object.values(map).reverse() );
+		let reversedMap = Object.values(map).reverse();
 
 		while (reversedMap.length > 0) {
 			let task = reversedMap.pop();
@@ -623,9 +697,12 @@ const tinySVG = new (class {
 
 			if (task.endTag) result += `</${tag}>`;
 			else {
-				if (contents !== undefined && contents !== null) {
+				if (
+					(task.contents !== undefined && task.contents !== null) ||
+					(contents !== undefined && contents !== null)
+				) {
 					result +=
-						`<${tag}${string}>${contents}` +
+						`<${tag}${string}>${task.contents}${contents}` +
 						(task.startTag === true ? "" : `</${tag}>`);
 				} else
 					result += `<${tag}${string}${
@@ -733,7 +810,21 @@ const tinySVG = new (class {
 	 * @param {*} keys
 	 * @returns
 	 */
-	isColourTag(tag, keys = ["path", "circle", "rect", "p", "c", "r"]) {
+	isColourTag(
+		tag,
+		keys = [
+			"path",
+			"circle",
+			"rect",
+			"p",
+			"c",
+			"r",
+			"ellipse",
+			"poly",
+			"polygon",
+			"e",
+		]
+	) {
 		return keys.filter((val) => val === tag).length !== 0;
 	}
 
@@ -743,7 +834,21 @@ const tinySVG = new (class {
 	 * @param {*} keys
 	 * @returns
 	 */
-	isPathTag(tag, keys = ["path", "circle", "rect", "p", "c", "r"]) {
+	isPathTag(
+		tag,
+		keys = [
+			"path",
+			"circle",
+			"rect",
+			"p",
+			"c",
+			"r",
+			"ellipse",
+			"poly",
+			"polygon",
+			"e",
+		]
+	) {
 		return keys.filter((val) => val === tag).length !== 0;
 	}
 
@@ -825,38 +930,36 @@ const tinySVG = new (class {
 	}
 
 	/**
-	 * Decudes the colour from HTML style attribute
-	 * @param {*} style
+	 * Gets the colour of an SVG element from its style or fill tag
+	 * @param {object} properties
+	 * @param {bool} convertToNumber
 	 * @returns
 	 */
+	getHexFromStyle(properties, convertToNumber = false) {
+		let potentialHex = properties.fill || properties.style;
+		let result;
+		//is already a hex
+		if (potentialHex.substring(0, 1) === "#")
+			result =
+				convertToNumber || this.settings.convertToNumber
+					? parseInt(properties.fill.substring(1, 7), 16)
+					: potentialHex;
+		else {
+			if (potentialHex.indexOf("fill:") === -1) return "none";
 
-	getHexFromStyle(properties) {
-		if (properties.fill !== undefined)
-			return this.settings.convertToNumber
-				? parseInt(this.tryDecodeURI(properties.fill.substring(1)), 16)
-				: properties.fill;
-		let style = properties?.style;
-		if (style === undefined) return "none";
-		let lines = style.split(";");
+			let split = potentialHex.split("fill:")[1];
 
-		if (lines.length !== 0) style = lines[0];
+			if (split.indexOf(";") !== -1) split = split.split(";")[0];
 
-		let parts = style.split("#"); //if we find no hex code at the start of the string, then try and go to the end tag
-		if (parts[1] === undefined) style = lines[lines.length - 1];
-		else
-			return this.settings.convertToNumber
-				? parseInt(this.tryDecodeURI(parts[1]), 16) || "none"
-				: this.tryDecodeURI(parts[1]);
+			if (split.length > 7 || split.indexOf("#") === -1) return "none";
+			else
+				result =
+					convertToNumber || this.settings.convertToNumber
+						? parseInt(split.substring(1, 7), 16)
+						: split;
+		}
 
-		//try second to end tag or first again
-		if (style === "") style = lines[Math.max(0, lines.length - 2)];
-
-		parts = style.split("#"); //
-		if (parts[1] === undefined) return "none";
-
-		return this.settings.convertToNumber
-			? parseInt(this.tryDecodeURI(parts[1]), 16) || "none"
-			: this.tryDecodeURI(parts[1]);
+		return result;
 	}
 
 	/**
