@@ -567,7 +567,7 @@ const tinySVG = new (class {
 		}
 
 		let result = "";
-		let reversedMap = Object.values(map).reverse();
+		let reversedMap = (map instanceof Array === true ? map.reverse() : Object.values(map).reverse() );
 
 		while (reversedMap.length > 0) {
 			let task = reversedMap.pop();
