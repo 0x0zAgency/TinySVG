@@ -238,14 +238,17 @@ const tinySVG = new (class {
 	collapseProperties(properties) {
 		if (properties === null) return null;
 
-		let parameters = "";
+		let parameters = " ";
 		for (let [index, value] of Object.entries(properties)) {
 			if (value === null) continue;
 
-			parameters += ` ${this.tryDecodeURI(index)}="${this.tryDecodeURI(
-				value
-			)}"`;
+			parameters += `${this.tryDecodeURI(index)}="${
+				this.tryDecodeURI(value) === ""
+					? value
+					: this.tryDecodeURI(value)
+			}"`;
 		}
+
 		return parameters;
 	}
 
@@ -554,11 +557,11 @@ const tinySVG = new (class {
 		let pathCount = 0;
 		let svgColours = [...colours].reverse();
 
-		if (typeof tinySVG === "object")
+		if (tinySVG instanceof Array === true) map = tinySVG;
+		else if (typeof tinySVG === "object")
 			map = tinySVG.paths || tinySVG.map || tinySVG;
-
 		//convert from string to map
-		if (typeof tinySVG === "string") {
+		else if (typeof tinySVG === "string") {
 			map = this.readTinySVG(tinySVG);
 		}
 
