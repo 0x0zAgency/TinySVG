@@ -356,7 +356,7 @@ const tinySVG = new (class {
 
 		if (conversionMethod instanceof Array) {
 			key = conversionMethod[0];
-			if (typeof conversionMethod[0] !== "function")
+			if (typeof conversionMethod[1] !== "function")
 				throw new Error("Value must be callable");
 
 			callable = conversionMethod[1];
@@ -385,7 +385,7 @@ const tinySVG = new (class {
 
 		if (parseMethod instanceof Array) {
 			key = parseMethod[0];
-			if (typeof parseMethod[0] !== "function")
+			if (typeof parseMethod[1] !== "function")
 				throw new Error("Value must be callable");
 
 			callable = parseMethod[1];
