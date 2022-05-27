@@ -477,20 +477,19 @@ const tinySVG = new (class {
 						typeof propertyIndex === "string"
 							? propertyIndex
 									.toLowerCase()
-									.split("~")
-									.join(":")
+									.replace(/~/g, ":") //not sure why i do this
 									.replace(/|/g, "")
 							: propertyIndex
 					] =
 						typeof propertyValue === "string"
-							? //replace : with ~ (to keep css intact) and remove any |
-							  propertyValue.split("~").join(":")
+							? //not sure why i do this
+							  propertyValue.replace(/~/g, ":")
 							: propertyValue;
 				}
 
 				//skip undefined tag
 				if (
-					this.conversionMethods[value.tagName.toLowerCase()] ==
+					this.conversionMethods[value.tagName.toLowerCase()] ===
 					undefined
 				) {
 					console.log(
@@ -648,7 +647,7 @@ const tinySVG = new (class {
 			let string;
 			let contents;
 			let tag = task.tag;
-			if (this.parseMethods[task.tag] == undefined) string = ``;
+			if (this.parseMethods[task.tag] === undefined) string = ``;
 			else {
 				//get the tag
 				[tag] = this.parseMethods[task.tag].bind(this, null)();
@@ -740,7 +739,7 @@ const tinySVG = new (class {
 				properties === null &&
 				(key.indexOf("[") === -1 || key.indexOf("]") === -1)
 			) {
-				obj.tag = key.replace("[", "").replace("]", "");
+				obj.tag = key.replace(/\[/g, "").replace(/\]/g, "");
 			} else {
 				obj.tag = key.substring(0, key.indexOf("["));
 			}
@@ -763,10 +762,11 @@ const tinySVG = new (class {
 				else {
 					let splitProperty = property.split("$");
 					let val = splitProperty[1] || null;
-					if (val !== null) val = val.replace("~", ":");
+					if (val !== null) val = val.replace(/~/g, ":");
 					if (val === "*" || val.length === 0) val = null;
-					obj.properties[(splitProperty[0] || "").replace("~", ":")] =
-						val;
+					obj.properties[
+						(splitProperty[0] || "").replace(/~/g, ":")
+					] = val;
 				}
 			});
 
@@ -867,7 +867,7 @@ const tinySVG = new (class {
 	}
 
 	/**
-	 *
+	 * Produces a perfect CSS colour code each time
 	 * @param {number} decimal
 	 * @returns
 	 */
